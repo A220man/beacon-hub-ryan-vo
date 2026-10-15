@@ -1,0 +1,109 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: beacon-postgres
+    environment:
+      POSTGRES_DB: beacon_hub
+      POSTGRES_USER: beacon
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-beacon_dev_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U beacon -d beacon_hub"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - beacon-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1
+    container_name: beacon-keycloak
+    command: start-dev --import-realm
+    environment:
+      KC_BOOTSTRAP_ADMIN_USER: ${KEYCLOAK_ADMIN:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin_dev_password}
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: beacon_hub
+      KC_DB_USERNAME: beacon
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-beacon_dev_password}
+      KC_HOSTNAME: localhost
+      KC_HTTP_ENABLED: "true"
+    volumes:
+      - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      - beacon-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: beacon-backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://beacon:${POSTGRES_PASSWORD:-beacon_dev_password}@postgres:5432/beacon_hub
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: beacon-hub
+      KEYCLOAK_CLIENT_ID: beacon-frontend
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-}
+      OIDC_ISSUER: http://keycloak:8080/realms/beacon-hub
+      OIDC_AUDIENCE: account
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-change-in-production-must-be-32-chars}
+      ENVIRONMENT: development
+      CORS_ORIGINS: '["http://localhost:5173"]'
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_PROVIDER: ${LLM_PROVIDER:-openai-compatible}
+      LLM_MODEL: ${LLM_MODEL:-gpt-4o-mini}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.openai.com/v1}
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - beacon-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: beacon-frontend
+    ports:
+      - "127.0.0.1:5173:5173"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:5173/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - beacon-network
+
+volumes:
+  postgres_data:
+
+networks:
+  beacon-network:
+    driver: bridge
