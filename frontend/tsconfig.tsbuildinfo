@@ -1,0 +1,1 @@
+{"root":["./src/App.test.tsx","./src/App.tsx","./src/main.tsx","./src/test-setup.ts","./src/api/client.ts","./src/components/AnswerFileValidator.tsx","./src/components/ComponentAdvisor.tsx","./src/components/RecipeAnalyzer.tsx"],"version":"5.9.3"}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "name": "beacon-hub-ryan-vo",
+  "owner": "A220man",
+  "email": "ryandtvo@gmail.com",
+  "domain": "AI/ML developer tools",
+  "summary": "Work in progress: beacon-hub-ryan-vo",
+  "workflows": [
+    "Analyze Windows 11 component removal recipes for DISM failure risk using ML models trained on real-world failure patterns",
+    "Get AI-powered recommendations for safe/unsafe component removals per Windows build version with dependency validation",
+    "Validate autounattend.xml answer files for common deployment errors including ProductKey, locale, and component mismatches"
+  ],
+  "auth": "oidc-keycloak-saml-broker",
+  "llm_providers": [
+    "openai-compatible",
+    "anthropic",
+    "gemini",
+    "ollama"
+  ],
+  "status": "work-in-progress"
+}
