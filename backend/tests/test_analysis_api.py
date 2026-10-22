@@ -4,7 +4,7 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 from app.main import create_app
-
+from tests.test_auth import get_test_client_with_auth, TEST_USER
 
 @pytest.fixture
 def app():
@@ -12,14 +12,11 @@ def app():
 
 
 @pytest.fixture
-async def client(app):
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        yield ac
+def auth_client(app):
+    return get_test_client_with_auth(TEST_USER)
 
 
-@pytest.mark.asyncio
-async def test_analyze_recipe_endpoint(client: AsyncClient):
+def test_analyze_recipe_endpoint(auth_client):
     recipe = {
         "name": "Test Recipe",
         "description": "Test",
@@ -39,8 +36,7 @@ async def test_analyze_recipe_endpoint(client: AsyncClient):
             },
         ],
     }
-
-    response = await client.post("/api/v1/analyze/recipe", json={"recipe": recipe, "target_build": "26100"})
+    response = auth_client.post("/api/v1/analyze/recipe", json={"recipe": recipe, "target_build": "26100"})
     assert response.status_code == 200
     data = response.json()
     assert "analysis" in data
@@ -54,14 +50,13 @@ async def test_analyze_recipe_endpoint(client: AsyncClient):
     assert "component_recommendations" in analysis
 
 
-@pytest.mark.asyncio
-async def test_analyze_recipe_endpoint_invalid(client: AsyncClient):
-    response = await client.post("/api/v1/analyze/recipe", json={"recipe": "invalid", "target_build": "26100"})
+def test_analyze_recipe_endpoint_invalid(auth_client):
+    response = auth_client.post("/api/v1/analyze/recipe", json={"recipe": "invalid", "target_build": "26100"})
     assert response.status_code == 422
 
-@pytest.mark.asyncio
-async def test_advisor_components_endpoint(client: AsyncClient):
-    response = await client.post("/api/v1/analyze/advisor/components", json={
+
+def test_advisor_components_endpoint(auth_client):
+    response = auth_client.post("/api/v1/analyze/advisor/components", json={
         "target_build": "26100",
         "categories": ["apps", "services"],
         "include_unsafe": False,
@@ -78,9 +73,8 @@ async def test_advisor_components_endpoint(client: AsyncClient):
         assert "risk_score" in comp
 
 
-@pytest.mark.asyncio
-async def test_advisor_components_endpoint_all_categories(client: AsyncClient):
-    response = await client.post("/api/v1/analyze/advisor/components", json={
+def test_advisor_components_endpoint_all_categories(auth_client):
+    response = auth_client.post("/api/v1/analyze/advisor/components", json={
         "target_build": "26100",
         "include_unsafe": True,
     })
@@ -89,9 +83,8 @@ async def test_advisor_components_endpoint_all_categories(client: AsyncClient):
     assert len(data["components"]) > 0
 
 
-@pytest.mark.asyncio
-async def test_advisor_database_endpoint(client: AsyncClient):
-    response = await client.get("/api/v1/analyze/advisor/database?target_build=26100")
+def test_advisor_database_endpoint(auth_client):
+    response = auth_client.get("/api/v1/analyze/advisor/database?target_build=26100")
     assert response.status_code == 200
     data = response.json()
     assert "components" in data
@@ -103,9 +96,7 @@ async def test_advisor_database_endpoint(client: AsyncClient):
         assert "category" in comp
         assert "safe_to_remove" in comp
 
-
-@pytest.mark.asyncio
-async def test_validate_autounattend_endpoint(client: AsyncClient):
+def test_validate_autounattend_endpoint(auth_client):
     xml = """<?xml version="1.0" encoding="utf-8"?>
 <unattend xmlns="urn:schemas-microsoft-com:unattend">
     <settings pass="windowsPE">
@@ -117,7 +108,7 @@ async def test_validate_autounattend_endpoint(client: AsyncClient):
     </settings>
 </unattend>
 """
-    response = await client.post("/api/v1/validate/autounattend", json={"xml": xml})
+    response = auth_client.post("/api/v1/validate/autounattend", json={"xml": xml})
     assert response.status_code == 200
     data = response.json()
     assert "valid" in data
@@ -126,8 +117,7 @@ async def test_validate_autounattend_endpoint(client: AsyncClient):
     assert "components_referenced" in data
 
 
-@pytest.mark.asyncio
-async def test_validate_autounattend_endpoint_missing_product_key(client: AsyncClient):
+def test_validate_autounattend_endpoint_missing_product_key(auth_client):
     xml = """<?xml version="1.0" encoding="utf-8"?>
 <unattend xmlns="urn:schemas-microsoft-com:unattend">
     <settings pass="windowsPE">
@@ -139,22 +129,20 @@ async def test_validate_autounattend_endpoint_missing_product_key(client: AsyncC
     </settings>
 </unattend>
 """
-    response = await client.post("/api/v1/validate/autounattend", json={"xml": xml})
+    response = auth_client.post("/api/v1/validate/autounattend", json={"xml": xml})
     assert response.status_code == 200
     data = response.json()
     assert data["valid"] is False
     assert any(i["code"] == "MISSING_PRODUCT_KEY" for i in data["issues"])
 
 
-@pytest.mark.asyncio
-async def test_validate_autounattend_endpoint_empty(client: AsyncClient):
-    response = await client.post("/api/v1/validate/autounattend", json={"xml": ""})
+def test_validate_autounattend_endpoint_empty(auth_client):
+    response = auth_client.post("/api/v1/validate/autounattend", json={"xml": ""})
     assert response.status_code == 400
 
 
-@pytest.mark.asyncio
-async def test_validate_autounattend_endpoint_malformed(client: AsyncClient):
-    response = await client.post("/api/v1/validate/autounattend", json={"xml": "<invalid>"})
+def test_validate_autounattend_endpoint_malformed(auth_client):
+    response = auth_client.post("/api/v1/validate/autounattend", json={"xml": "<invalid>"})
     assert response.status_code == 200
     data = response.json()
     assert data["valid"] is False
