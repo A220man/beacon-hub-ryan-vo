@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, status, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from pydantic import BaseModel
 
+from app.core.auth import require_viewer
 from app.services.answer_validator import validate_autounattend, ValidationSeverity
 from app.models.answer_file import ValidationIssue
 
-router = APIRouter(prefix="/api/v1/validate", tags=["validation"])
+router = APIRouter(prefix="/api/v1/validate", tags=["validation"], dependencies=[Depends(require_viewer)])
 
 
 class ValidateAutounattendRequest(BaseModel):

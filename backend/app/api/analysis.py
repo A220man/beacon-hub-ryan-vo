@@ -1,14 +1,16 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
+from app.core.auth import require_viewer
 from app.models.recipe import Recipe, RecipeCategory
 from app.models.analysis import AnalysisResult
 from app.services.predictor import analyze_recipe
 from app.services.advisor import recommend_components, get_component_database, ComponentInfo
 
-router = APIRouter(prefix="/api/v1/analyze", tags=["analysis"])
+router = APIRouter(prefix="/api/v1/analyze", tags=["analysis"], dependencies=[Depends(require_viewer)])
+
 
 
 class AnalyzeRecipeRequest(BaseModel):
