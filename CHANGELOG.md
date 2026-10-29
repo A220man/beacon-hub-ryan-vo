@@ -1,8 +1,17 @@
 # Changelog
 
+## 1.2.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
+# Changelog
+
 ## 1.1.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
+
+### Added
+- Added API test for 1MB request size limit on answer file validation endpoint
 
 ## 1.0.0 — work-in-progress checkpoint
 
