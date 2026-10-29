@@ -147,3 +147,10 @@ def test_validate_autounattend_endpoint_malformed(auth_client):
     data = response.json()
     assert data["valid"] is False
     assert any(i["code"] == "XML_PARSE_ERROR" for i in data["issues"])
+def test_validate_autounattend_endpoint_too_large(auth_client):
+    # Create XML larger than 1MB
+    large_xml = "x" * 1_100_000
+    response = auth_client.post("/api/v1/validate/autounattend", json={"xml": large_xml})
+    assert response.status_code == 413
+    data = response.json()
+    assert "too large" in data["detail"].lower() or "1MB" in data["detail"]
