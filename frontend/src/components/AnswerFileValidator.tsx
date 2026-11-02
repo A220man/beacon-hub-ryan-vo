@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { validateAutounattend, ValidateAutounattendResponse, ValidationIssue } from "../api/client";
 import "./AnswerFileValidator.css";
@@ -76,9 +77,9 @@ export function AnswerFileValidator() {
     }
   };
 
-  const filteredIssues = result?.issues.filter(issue =>
+  const filteredIssues = (result?.issues ?? []).filter(issue =>
     filterSeverity === "all" || issue.severity === filterSeverity
-  ) || [];
+  );
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFilterSeverity(e.target.value as FilterSeverity);
@@ -116,9 +117,9 @@ export function AnswerFileValidator() {
               {result.valid ? "✓ Valid" : "✗ Invalid"}
             </div>
             <div className="issue-counts">
-              <span className="error-count">Errors: {result.issues.filter(i => i.severity === "error").length}</span>
-              <span className="warning-count">Warnings: {result.issues.filter(i => i.severity === "warning").length}</span>
-              <span className="info-count">Info: {result.issues.filter(i => i.severity === "info").length}</span>
+              <span className="error-count">Errors: {(result?.issues ?? []).filter(i => i.severity === "error").length}</span>
+              <span className="warning-count">Warnings: {(result?.issues ?? []).filter(i => i.severity === "warning").length}</span>
+              <span className="info-count">Info: {(result?.issues ?? []).filter(i => i.severity === "info").length}</span>
             </div>
           </div>
 
@@ -156,21 +157,21 @@ export function AnswerFileValidator() {
             </div>
           )}
 
-          {(result.passes_found.length > 0 || result.components_referenced.length > 0) && (
+          {((result?.passes_found?.length ?? 0) > 0 || (result?.components_referenced?.length ?? 0) > 0) && (
             <div className="metadata-section">
-              {result.passes_found.length > 0 && (
+              {result?.passes_found?.length > 0 && (
                 <div className="metadata-block">
                   <h4>Passes Found</h4>
                   <ul>
-                    {result.passes_found.map((p, i) => <li key={i}>{p}</li>)}
+                    {result?.passes_found?.map((p, i) => <li key={i}>{p}</li>) ?? []}
                   </ul>
                 </div>
               )}
-              {result.components_referenced.length > 0 && (
+              {result?.components_referenced?.length > 0 && (
                 <div className="metadata-block">
                   <h4>Components Referenced</h4>
                   <ul>
-                    {result.components_referenced.map((c, i) => <li key={i}><code>{c}</code></li>)}
+                    {result?.components_referenced?.map((c, i) => <li key={i}><code>{c}</code></li>) ?? []}
                   </ul>
                 </div>
               )}

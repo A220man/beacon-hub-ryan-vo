@@ -68,3 +68,9 @@ keycloak/realm-export.json.bak
 *.tar.gz
 *.zip
 *.whl
+*.db-wal
+*.db-shm
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
