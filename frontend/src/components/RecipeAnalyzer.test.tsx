@@ -70,7 +70,7 @@ describe("RecipeAnalyzer", () => {
     await waitFor(() => {
       expect(screen.getByText(/overall risk: low/i)).toBeInTheDocument();
     });
-    expect(screen.getByText("25.0%")).toBeInTheDocument();
+    expect(screen.getByText(/25\.0%/)).toBeInTheDocument();
     expect(screen.getByText("DISM FAILURE")).toBeInTheDocument();
     expect(screen.getByText("TestComponent")).toBeInTheDocument();
     expect(screen.getByText("Test reason")).toBeInTheDocument();
