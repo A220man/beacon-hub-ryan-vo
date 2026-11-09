@@ -1,9 +1,22 @@
 # Changelog
 
-## 1.4.0 — work-in-progress checkpoint
+## 1.5.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
 
+## 1.4.0 — work-in-progress checkpoint
+
+### Fixed
+- TypeScript errors in frontend test files: replaced `new Promise((resolve) => { resolve = r })` pattern with `Promise.withResolvers()` for proper type inference
+- Frontend typecheck now passes without errors
+
+### Verified
+- All backend tests pass (60/60)
+- All frontend tests pass (19/19)
+- Frontend typecheck passes
+- Frontend build passes
+
+Partial code published for continued development. Known issues: STATUS.md.
 ## 1.3.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.

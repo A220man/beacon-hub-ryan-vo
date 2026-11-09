@@ -90,10 +90,7 @@ describe("RecipeAnalyzer", () => {
   });
 
   it("shows loading state during analysis", async () => {
-    let resolve: (value: unknown) => void;
-    const promise = new Promise((r) => {
-      resolve = r;
-    });
+    const { promise, resolve } = Promise.withResolvers<unknown>();
     (globalThis.fetch as Mock).mockReturnValue(promise);
 
     render(<RecipeAnalyzer />);
