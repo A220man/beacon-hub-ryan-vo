@@ -76,3 +76,4 @@ keycloak/realm-export.json.bak
 *.sqlite3-shm
 .turbo/
 **/data/media/
+.venv*/
