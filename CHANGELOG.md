@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.7.0 — work-in-progress checkpoint
+
+Partial code published for continued development. Known issues: STATUS.md.
+
+## 1.6.1 — work-in-progress checkpoint
+
+### Added
+- OIDC/Keycloak authentication (auth-oidc feature)
+- Backend token validation endpoint at `/api/v1/auth/callback`
+- Frontend PKCE login flow with Keycloak integration
+- Role-based access control (viewer/operator/admin) via auth guards
+- Unauthenticated access rejection (401) on protected endpoints
+- Frontend login/logout buttons in the navbar
+
+### Changed
+- Updated `frontend/src/App.tsx` to conditionally render based on auth state
+- Updated `frontend/src/main.tsx` to wrap with `AuthProvider`
+- Updated `backend/app/main.py` to include auth router
+- Updated `PLAN.md` and `feature-plan.json` to track auth-oidc feature
+
+### Known Issues
+- PKCE code challenge generation uses Web Crypto API (client-side only)
+- Token exchange between frontend and backend needs Keycloak client configuration
+- Session management uses localStorage (consider HttpOnly cookies for production)
+
 ## 1.6.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
@@ -29,8 +54,6 @@ Partial code published for continued development. Known issues: STATUS.md.
 
 Partial code published for continued development. Known issues: STATUS.md.
 
-# Changelog
-
 ## 1.1.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
@@ -41,13 +64,6 @@ Partial code published for continued development. Known issues: STATUS.md.
 ## 1.0.0 — work-in-progress checkpoint
 
 Partial code published for continued development. Known issues: STATUS.md.
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [1.0.0] - 2026-10-15
 
 ### Added
 - FastAPI backend with `/api/v1/healthz` endpoint

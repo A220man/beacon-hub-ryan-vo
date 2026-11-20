@@ -4,7 +4,7 @@ Each round completes one feature or repair. Future items are planned, not implem
 
 ## Current round
 
-skeleton
+auth-oidc
 
 ## Roadmap
 
@@ -24,49 +24,9 @@ Implementation: `backend/app/main.py`, `backend/app/core/config.py`, `backend/ap
 
 Tests: `backend/tests/test_health.py`, `backend/tests/test_config.py`, `backend/tests/test_predictor.py`, `backend/tests/test_advisor.py`, `backend/tests/test_answer_validator.py`, `backend/tests/test_analysis_api.py`, `frontend/src/App.test.tsx`, `frontend/src/test-setup.ts`, `frontend/vitest.config.ts`
 
-### recipe-analyzer — Windows 11 recipe analyzer with ML failure prediction
-
-Status: done
-
-Acceptance:
-- API endpoint to analyze a recipe JSON and return risk assessment
-- ML model trained on synthetic failure patterns from issue data
-- Frontend form to paste/upload recipe and view analysis
-- Deterministic offline core works without LLM key
-
-Implementation: `backend/app/models/recipe.py`, `backend/app/models/analysis.py`, `backend/app/services/predictor.py`, `backend/app/api/analysis.py`, `frontend/src/components/RecipeAnalyzer.tsx`, `frontend/src/components/RecipeAnalyzer.css`, `frontend/src/api/client.ts`
-
-Tests: `backend/tests/test_predictor.py`, `backend/tests/test_analysis_api.py`
-
-### component-advisor — AI-powered component removal advisor
-
-Status: done
-
-Acceptance:
-- API endpoint recommending safe/unsafe components for a given Windows build
-- Frontend wizard to select build version and get recommendations
-- Explanations grounded in actual component dependency data
-
-Implementation: `backend/app/models/recipe.py`, `backend/app/services/advisor.py`, `backend/app/api/analysis.py`, `frontend/src/components/ComponentAdvisor.tsx`, `frontend/src/components/ComponentAdvisor.css`, `frontend/src/api/client.ts`
-
-Tests: `backend/tests/test_advisor.py`, `backend/tests/test_analysis_api.py`
-
-### iso-validator — Unattended answer file validator
-
-Status: done
-
-Acceptance:
-- API endpoint validating autounattend.xml for common errors
-- Frontend upload/validation with detailed error reports
-- Catches ProductKey, locale, and component mismatch issues
-
-Implementation: `backend/app/models/answer_file.py`, `backend/app/services/answer_validator.py`, `backend/app/api/validation.py`, `frontend/src/components/AnswerFileValidator.tsx`, `frontend/src/components/AnswerFileValidator.css`, `frontend/src/api/client.ts`
-
-Tests: `backend/tests/test_answer_validator.py`, `backend/tests/test_analysis_api.py`
-
 ### auth-oidc — OIDC/Keycloak authentication
 
-Status: planned
+Status: in_progress
 
 Acceptance:
 - Keycloak realm import provided
@@ -74,4 +34,8 @@ Acceptance:
 - Frontend PKCE login flow with callback
 - Role-based access (viewer/operator/admin)
 - Tests cover unauthenticated rejection and role denial
+
+Implementation: `backend/app/api/auth.py`, `backend/app/main.py`, `frontend/src/auth/pkce.ts`, `frontend/src/auth/auth-context.tsx`, `frontend/src/auth/callback.tsx`, `frontend/src/main.tsx`, `frontend/src/App.tsx`
+
+Tests: `backend/tests/test_auth.py`
 
