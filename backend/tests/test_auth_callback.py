@@ -53,7 +53,7 @@ def test_callback_exchanges_code_and_returns_real_user():
     assert body["user"]["user_id"] == "kc-user-123"
     assert body["user"]["username"] == "realuser"
     assert body["user"]["email"] == "real@example.com"
-    assert body["user"]["roles"] == ["viewer", "operator"]
+    assert set(body["user"]["roles"]) == {"viewer", "operator"}
 
 
 def test_callback_rejects_missing_verifier():

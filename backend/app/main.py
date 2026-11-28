@@ -32,7 +32,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(health.router, prefix="/api/v1")
-    app.include_router(auth.router, prefix="/api/v1")
+    app.include_router(auth.router)
     app.include_router(analysis.router)
     app.include_router(validation.router)
 
